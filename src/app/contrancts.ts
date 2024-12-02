@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const Item = z.object({
+  id: z.string().uuid(),
   label: z.string(),
   url: z.string().url(),
 });

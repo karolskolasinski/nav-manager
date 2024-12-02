@@ -6,20 +6,20 @@ import Image from "next/image";
 
 type FormProps = {
   onAddItem: (item: NavItem) => void;
+  onAbort: () => void;
 };
 
 export function Form(props: FormProps) {
-  let { onAddItem } = props;
+  let { onAddItem, onAbort } = props;
   const [id] = useState(uuidv4());
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
-  const [subitems, setSubitems] = useState([]);
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onAddItem({ id, label, url, subitems });
+        onAddItem({ id, label, url, subitems: [] });
       }}
       className="w-full rounded-md max-w-[73rem] py-spacing-2xl px-spacing-3xl bg-white flex flex-col gap-8 items-center border border-solid border-border-primary"
     >
@@ -74,7 +74,10 @@ export function Form(props: FormProps) {
       </div>
 
       <div className="flex gap-[8px] self-start">
-        <button className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border">
+        <button
+          onClick={onAbort}
+          className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border"
+        >
           Anuluj
         </button>
 

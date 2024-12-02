@@ -3,12 +3,14 @@ import { useState } from "react";
 import { NavItem } from "@/app/contrancts";
 import Image from "next/image";
 import { Form } from "@/app/form";
+import { NavItemComponent } from "@/app/item";
 
 export default function Home() {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [itemList, setItemList] = useState([] as NavItem[]);
 
   const handleShowFormClick = () => setIsFormVisible(true);
+  const handleHideFormClick = () => setIsFormVisible(false);
 
   const addItem = (data: NavItem) => {
     const newItems: NavItem[] = [...itemList, data];
@@ -30,9 +32,9 @@ export default function Home() {
         </button>
       </div>
 
-      {isFormVisible && <Form onAddItem={addItem} />}
+      {isFormVisible && <Form onAddItem={addItem} onAbort={handleHideFormClick} />}
 
-      {itemList.map((item) => <div>item</div>)}
+      {itemList.map((item) => <NavItemComponent key={item.id} navItem={item} />)}
     </main>
   );
 }

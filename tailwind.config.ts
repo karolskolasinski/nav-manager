@@ -27,6 +27,8 @@ export default {
         "border-secondary": "#EAECF0",
       },
       spacing: {
+        "spacing-xs": "4px",
+        "spacing-sm": "6px",
         "spacing-xl": "16px",
         "spacing-2xl": "20px",
         "spacing-3xl": "24px",

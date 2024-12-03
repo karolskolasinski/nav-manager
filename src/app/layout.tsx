@@ -11,7 +11,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           rel="stylesheet"
         />
       </head>
-      <body>
+      <body className="bg-[whitesmoke]">
         {children}
       </body>
     </html>

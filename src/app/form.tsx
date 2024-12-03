@@ -21,10 +21,10 @@ export function Form(props: FormProps) {
         e.preventDefault();
         onAddItem({ id, label, url, subitems: [] });
       }}
-      className="w-full rounded-md max-w-[73rem] py-spacing-2xl px-spacing-3xl bg-white flex flex-col gap-8 items-center border border-solid border-border-primary"
+      className="w-full rounded-md max-w-[73rem] py-spacing-2xl px-spacing-3xl bg-white flex flex-col gap-spacing-2xl items-center border border-solid border-border-primary"
     >
       <div className="w-full flex">
-        <div className="w-full flex flex-col gap-4">
+        <div className="w-full flex flex-col gap-[8px]">
           <div className="flex flex-col gap-1">
             <label htmlFor="label" className="text-sm text-text-secondary-700">
               Nazwa
@@ -69,6 +69,7 @@ export function Form(props: FormProps) {
             alt="icon"
             width={25}
             height={25}
+            className="min-w-[25px]"
           />
         </div>
       </div>
@@ -76,12 +77,12 @@ export function Form(props: FormProps) {
       <div className="flex gap-[8px] self-start">
         <button
           onClick={onAbort}
-          className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border"
+          className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border hover:bg-gray-100"
         >
           Anuluj
         </button>
 
-        <button className="bg-white h-[40px] text-button-secondary-color-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-color-border">
+        <button className="bg-white h-[40px] text-button-secondary-color-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-color-border hover:bg-violet-50">
           Dodaj
         </button>
       </div>

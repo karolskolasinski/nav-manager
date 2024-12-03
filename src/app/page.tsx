@@ -20,12 +20,12 @@ export default function Home() {
 
   return (
     <main className="p-8 flex flex-col gap-8 items-center">
-      <div className="w-full rounded-md max-w-[73rem] p-4 bg-bg-secondary flex flex-col gap-8 items-center border border-solid border-border-secondary">
+      <div className="w-full rounded-md max-w-[73rem] p-4 bg-bg-secondary flex flex-col gap-spacing-3xl items-center border border-solid border-border-secondary">
         {!itemList.length && emptyListText()}
 
         <button
           onClick={handleShowFormClick}
-          className="bg-button-primary-bg h-[40px] text-white text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold"
+          className="bg-button-primary-bg h-[40px] text-white text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold hover:brightness-110"
         >
           <Image src="/icon.svg" alt="icon" width={19} height={20} />
           Dodaj pozycję menu
@@ -41,7 +41,7 @@ export default function Home() {
 
 function emptyListText() {
   return (
-    <div className="text-center flex flex-col gap-1">
+    <div className="text-center flex flex-col gap-spacing-xs">
       <div className="font-bold text-text-primary-900">Menu jest puste</div>
       <div className="text-sm text-text-tertiary-600">
         W tym menu nie ma jeszcze żadnych linków.

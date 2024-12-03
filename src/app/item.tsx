@@ -4,8 +4,13 @@ import Image from "next/image";
 import { Form } from "@/app/form";
 import { useState } from "react";
 
-export function NavItemComponent(props: { navItem: NavItem }) {
-  const { navItem } = props;
+type NavItemComponentProps = {
+  navItem: NavItem;
+  onRemoveItem: (itemId: string) => void;
+};
+
+export function NavItemComponent(props: NavItemComponentProps) {
+  const { navItem, onRemoveItem } = props;
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
@@ -23,7 +28,10 @@ export function NavItemComponent(props: { navItem: NavItem }) {
         </div>
 
         <div className="flex justify-center">
-          <button className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-l-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border hover:bg-gray-100">
+          <button
+            onClick={() => onRemoveItem(navItem.id)}
+            className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-l-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border hover:bg-gray-100"
+          >
             Usuń
           </button>
 

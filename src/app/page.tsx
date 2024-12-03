@@ -9,9 +9,6 @@ export default function Home() {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [itemList, setItemList] = useState([] as NavItem[]);
 
-  const handleShowFormClick = () => setIsFormVisible(true);
-  const handleHideFormClick = () => setIsFormVisible(false);
-
   const addItem = (data: NavItem) => {
     const parsed = NavItem.safeParse(data);
     if (!parsed.success) {
@@ -24,13 +21,18 @@ export default function Home() {
     setIsFormVisible(false);
   };
 
+  const removeItem = (itemId: string) => {
+    const newItems = itemList.filter((item) => item.id !== itemId);
+    setItemList(newItems);
+  };
+
   return (
     <main className="p-8 flex flex-col gap-8 items-center">
       <div className="w-full rounded-md max-w-[73rem] p-4 bg-bg-secondary flex flex-col gap-spacing-3xl items-center border border-solid border-border-secondary">
         {!itemList.length && emptyListText()}
 
         <button
-          onClick={handleShowFormClick}
+          onClick={() => setIsFormVisible(true)}
           className="bg-button-primary-bg h-[40px] text-white text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold hover:brightness-110"
         >
           <Image src="/icon.svg" alt="icon" width={19} height={20} />
@@ -38,9 +40,15 @@ export default function Home() {
         </button>
       </div>
 
-      {isFormVisible && <Form onAddItem={addItem} onAbort={handleHideFormClick} />}
+      {isFormVisible && <Form onAddItem={addItem} onAbort={() => setIsFormVisible(false)} />}
 
-      {itemList.map((item) => <NavItemComponent key={item.id} navItem={item} />)}
+      {itemList.map((item) => (
+        <NavItemComponent
+          key={item.id}
+          navItem={item}
+          onRemoveItem={(itemId) => removeItem(itemId)}
+        />
+      ))}
     </main>
   );
 }

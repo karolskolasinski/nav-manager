@@ -35,7 +35,6 @@ export function Form(props: FormProps) {
               defaultValue={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="np. Promocje"
-              required
               className="text-text-primary-900 px-4 py-2 border border-solid  border-border-primary rounded-md"
             />
           </div>
@@ -49,7 +48,6 @@ export function Form(props: FormProps) {
                 defaultValue={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="Wklej lub wyszukaj"
-                required
                 className="w-full text-text-primary-900 pl-10 pr-4 py-2 border border-solid  border-border-primary rounded-md"
               />
               <Image

@@ -13,6 +13,12 @@ export default function Home() {
   const handleHideFormClick = () => setIsFormVisible(false);
 
   const addItem = (data: NavItem) => {
+    const parsed = NavItem.safeParse(data);
+    if (!parsed.success) {
+      alert("Formularz zawiera błędy, popraw błędy i spróbuj jeszcze raz.");
+      return;
+    }
+
     const newItems: NavItem[] = [...itemList, data];
     setItemList(newItems);
     setIsFormVisible(false);

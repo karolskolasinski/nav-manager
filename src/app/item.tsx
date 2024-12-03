@@ -1,8 +1,12 @@
+"use client";
 import { NavItem } from "@/app/contrancts";
 import Image from "next/image";
+import { Form } from "@/app/form";
+import { useState } from "react";
 
 export function NavItemComponent(props: { navItem: NavItem }) {
   const { navItem } = props;
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
     <div className="w-full rounded-md max-w-[73rem] flex flex-col items-center border border-solid border-border-primary bg-transparent">
@@ -37,8 +41,20 @@ export function NavItemComponent(props: { navItem: NavItem }) {
         {navItem.subitems.map((subitem) => <div key={subitem.id}>{subitem.label}</div>)}
       </div>
 
+      {isFormVisible && (
+        <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
+          <Form
+            onAddItem={() => {}}
+            onAbort={() => setIsFormVisible(false)}
+          />
+        </div>
+      )}
+
       <div className="w-full py-spacing-2xl px-spacing-3xl flex items-center bg-transparent">
-        <button className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border hover:bg-gray-100">
+        <button
+          onClick={() => setIsFormVisible(true)}
+          className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border hover:bg-gray-100"
+        >
           Dodaj podstronę
         </button>
       </div>

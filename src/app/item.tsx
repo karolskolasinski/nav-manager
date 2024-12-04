@@ -82,6 +82,8 @@ export function NavItem(props: Props) {
   }
 
   const indentation = isChild ? "pl-[64px]" : "";
+  const buttonClass =
+    "bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 flex gap-2 items-center font-semibold border border-solid border-button-secondary-border";
 
   return (
     <div className="w-full max-w-[73rem]">
@@ -102,18 +104,21 @@ export function NavItem(props: Props) {
             <div className="flex justify-center">
               <button
                 onClick={() => removeItem(item.id)}
-                className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-l-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border hover:bg-gray-100"
+                className={`${buttonClass} rounded-l-md hover:bg-gray-100`}
               >
                 Usuń
               </button>
 
-              <button className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 flex gap-2 items-center font-semibold border border-solid border-button-secondary-border border-x-0 hover:bg-gray-100">
+              <button
+                onClick={() => alert("TODO: edit item")}
+                className={`${buttonClass} border-x-0 hover:bg-gray-100`}
+              >
                 Edytuj
               </button>
 
               <button
                 onClick={() => showForm(item.id)}
-                className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-r-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border hover:bg-gray-100"
+                className={`${buttonClass} rounded-r-md hover:bg-gray-100`}
               >
                 Dodaj <span className="hidden md:block">pozycję menu</span>
               </button>
@@ -153,7 +158,7 @@ export function NavItem(props: Props) {
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <button
                 onClick={() => setIsFormVisible(true)}
-                className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border hover:bg-gray-100"
+                className={`${buttonClass} rounded-md hover:bg-gray-100`}
               >
                 Dodaj pozycję menu
               </button>

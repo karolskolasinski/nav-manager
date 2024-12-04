@@ -99,6 +99,12 @@ export function NavItem(props: Props) {
     setVisibleForms([]);
   }
 
+  function showNewItemForm() {
+    setToEdit(null);
+    setIsFormVisible(true);
+    setVisibleForms([]);
+  }
+
   const buttonClass =
     "bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 flex gap-2 items-center font-semibold border border-solid border-button-secondary-border";
 
@@ -178,7 +184,7 @@ export function NavItem(props: Props) {
           {index === itemList.length - 1 && !isChild && (
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <button
-                onClick={() => setIsFormVisible(true)}
+                onClick={() => showNewItemForm()}
                 className={`${buttonClass} rounded-md hover:bg-gray-100`}
               >
                 Dodaj pozycję menu

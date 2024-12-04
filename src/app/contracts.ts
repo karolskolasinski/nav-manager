@@ -6,11 +6,11 @@ const BaseItem = z.object({
   url: z.string().url(),
 });
 
-type SubItem = z.infer<typeof BaseItem> & {
-  subItem?: SubItem;
+type SubItems = z.infer<typeof BaseItem> & {
+  subItems: SubItems[];
 };
 
-export const Item: z.ZodType<SubItem> = BaseItem.extend({
-  subItem: z.lazy(() => Item.optional()),
+export const Item: z.ZodType<SubItems> = BaseItem.extend({
+  subItems: z.lazy(() => Item.array()),
 });
 export type Item = z.infer<typeof Item>;

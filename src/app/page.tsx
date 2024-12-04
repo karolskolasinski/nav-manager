@@ -42,7 +42,7 @@ export default function Home() {
         {isFormVisible && <Form onAddItem={addMenu} onAbort={() => setIsFormVisible(false)} />}
       </div>
 
-      {menuList.map((item) => <NavItem key={item.id} navItem={item} />).reverse()}
+      {menuList.map((item) => <NavItem key={item.id} item={item} />).reverse()}
     </main>
   );
 }

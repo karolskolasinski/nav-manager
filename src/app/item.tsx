@@ -5,15 +5,15 @@ import React, { useState } from "react";
 import { Form } from "@/app/form";
 
 type Props = {
-  navItem: Item;
+  item: Item;
   isChild?: boolean;
 };
 
 export function NavItem(props: Props) {
-  const { navItem, isChild } = props;
+  const { item, isChild } = props;
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [itemList, setItemList] = useState([navItem] as Item[]);
-  const [visibleForms, setVisibleForms] = useState<boolean[]>(Array(itemList.length).fill(false));
+  const [visibleForms, setVisibleForms] = useState<string[]>([]);
+  const [itemList, setItemList] = useState([item] as Item[]);
 
   function addItem(item: Item) {
     const parsed = Item.safeParse(item);
@@ -30,20 +30,12 @@ export function NavItem(props: Props) {
     setItemList((prev) => prev.filter((item) => item.id !== itemId));
   }
 
-  function showForm(index: number) {
-    setVisibleForms((prev) => {
-      const updatedForms = [...prev];
-      updatedForms[index] = true;
-      return updatedForms;
-    });
+  function showForm(itemId: string) {
+    setVisibleForms((prev) => [...prev, itemId]);
   }
 
-  function hideForm(index: number) {
-    setVisibleForms((prev) => {
-      const updatedForms = [...prev];
-      updatedForms[index] = false;
-      return updatedForms;
-    });
+  function hideForm(itemId: string) {
+    setVisibleForms((prev) => prev.filter((formId) => formId !== itemId));
   }
 
   function addSubItem(data: Item, index: number) {
@@ -53,14 +45,15 @@ export function NavItem(props: Props) {
       return;
     }
 
-    const updatedItem = { ...itemList[index], subItem: data };
+    const item = itemList[index];
+    item.subItems.push(data);
     setItemList((prev) => {
-      const updatedList = [...prev];
-      updatedList[index] = updatedItem;
-      return updatedList;
+      const newItems = [...prev];
+      newItems[index] = item;
+      return newItems;
     });
 
-    hideForm(index);
+    hideForm(itemList[index].id);
   }
 
   const indentation = isChild ? "pl-[64px]" : "";
@@ -94,7 +87,7 @@ export function NavItem(props: Props) {
               </button>
 
               <button
-                onClick={() => showForm(index)}
+                onClick={() => showForm(item.id)}
                 className="bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 rounded-r-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-border hover:bg-gray-100"
               >
                 Dodaj <span className="hidden md:block">pozycję menu</span>
@@ -102,17 +95,25 @@ export function NavItem(props: Props) {
             </div>
           </div>
 
-          {item.subItem && <NavItem navItem={item.subItem} isChild={true} />}
-
-          {visibleForms[index] && (
+          {/* for adding sub items */}
+          {visibleForms.includes(item.id) && (
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <Form
                 onAddItem={(data) => addSubItem(data, index)}
-                onAbort={() => hideForm(index)}
+                onAbort={() => hideForm(item.id)}
               />
             </div>
           )}
 
+          {item.subItems.map((subItem) => (
+            <NavItem
+              key={subItem.id}
+              item={subItem}
+              isChild={true}
+            />
+          ))}
+
+          {/* for adding items */}
           {isFormVisible && index === itemList.length - 1 && (
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <Form
@@ -122,7 +123,7 @@ export function NavItem(props: Props) {
             </div>
           )}
 
-          {!isFormVisible && index === itemList.length - 1 && !isChild && (
+          {index === itemList.length - 1 && !isChild && (
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <button
                 onClick={() => setIsFormVisible(true)}

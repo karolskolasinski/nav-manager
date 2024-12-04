@@ -19,7 +19,7 @@ export function Form(props: Props) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onAddItem({ id, label, url });
+        onAddItem({ id, label, url, subItems: [] });
       }}
       className="w-full rounded-md max-w-[73rem] py-spacing-2xl px-spacing-3xl bg-white flex flex-col gap-spacing-2xl items-center border border-solid border-border-primary"
     >

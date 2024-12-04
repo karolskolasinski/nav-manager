@@ -1,16 +1,16 @@
 import { z } from "zod";
 
-const Item = z.object({
+const BaseItem = z.object({
   id: z.string().uuid(),
   label: z.string().min(1),
   url: z.string().url(),
 });
 
-type Items = z.infer<typeof Item> & {
-  subitems: Items[];
+type SubItem = z.infer<typeof BaseItem> & {
+  subItem?: SubItem;
 };
 
-export const NavItem: z.ZodType<Items> = Item.extend({
-  subitems: z.lazy(() => NavItem.array()),
+export const Item: z.ZodType<SubItem> = BaseItem.extend({
+  subItem: z.lazy(() => Item.optional()),
 });
-export type NavItem = z.infer<typeof NavItem>;
+export type Item = z.infer<typeof Item>;

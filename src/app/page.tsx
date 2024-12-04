@@ -1,28 +1,48 @@
 "use client";
 import { useState } from "react";
-import Menu from "@/app/menu";
+import { Item } from "@/app/contracts";
+import Image from "next/image";
+import { Form } from "@/app/form";
+import { NavItem } from "@/app/item";
 
 export default function Home() {
-  const [menuList, setMenuList] = useState(["default"] as string[]);
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [menuList, setMenuList] = useState([] as Item[]);
 
-  function addMenu(id: string) {
-    setMenuList((prev) => [...prev, id]);
-  }
-
-  function removeMenu(id: string) {
-    setMenuList((prev) => prev.filter((menu) => menu !== id));
+  function addMenu(item: Item) {
+    const parsed = Item.safeParse(item);
+    if (!parsed.success) {
+      alert("Formularz zawiera błędy, popraw błędy i spróbuj jeszcze raz.");
+      return;
+    }
+    setMenuList((prev) => [...prev, item]);
+    setIsFormVisible(false);
   }
 
   return (
     <main className="p-8 flex flex-col gap-8 items-center">
-      {menuList.map((id) => (
-        <Menu
-          key={id}
-          id={id}
-          onAddMenu={(id) => addMenu(id)}
-          onRemoveMenu={(id) => removeMenu(id)}
-        />
-      )).reverse()}
+      <div className="w-full max-w-[73rem] rounded-md bg-bg-secondary flex flex-col p-4 gap-spacing-3xl items-center border border-solid border-border-secondary">
+        <div className="text-center flex flex-col gap-spacing-xs">
+          <div className="font-bold text-text-primary-900">Menu jest puste</div>
+          <div className="text-sm text-text-tertiary-600">
+            W tym menu nie ma jeszcze żadnych linków.
+          </div>
+        </div>
+
+        {!isFormVisible && (
+          <button
+            onClick={() => setIsFormVisible(true)}
+            className="bg-button-primary-bg h-[40px] text-white text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold hover:brightness-110"
+          >
+            <Image src="/icon.svg" alt="icon" width={19} height={20} />
+            Dodaj pozycję menu
+          </button>
+        )}
+
+        {isFormVisible && <Form onAddItem={addMenu} onAbort={() => setIsFormVisible(false)} />}
+      </div>
+
+      {menuList.map((item) => <NavItem key={item.id} navItem={item} />).reverse()}
     </main>
   );
 }

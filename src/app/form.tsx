@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
-import { NavItem } from "@/app/contracts";
+import { Item } from "@/app/contracts";
 
 type Props = {
-  onAddItem: (navItem: NavItem) => void;
+  onAddItem: (navItem: Item) => void;
   onAbort: () => void;
 };
 
@@ -19,7 +19,7 @@ export function Form(props: Props) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onAddItem({ id, label, url, subitems: [] });
+        onAddItem({ id, label, url });
       }}
       className="w-full rounded-md max-w-[73rem] py-spacing-2xl px-spacing-3xl bg-white flex flex-col gap-spacing-2xl items-center border border-solid border-border-primary"
     >

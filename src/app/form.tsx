@@ -1,16 +1,16 @@
 "use client";
 import { useState } from "react";
-import { NavItem } from "@/app/contrancts";
 import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
+import { NavItem } from "@/app/contracts";
 
-type FormProps = {
-  onAddItem: (item: NavItem) => void;
+type Props = {
+  onAddItem: (navItem: NavItem) => void;
   onAbort: () => void;
 };
 
-export function Form(props: FormProps) {
-  let { onAddItem, onAbort } = props;
+export function Form(props: Props) {
+  const { onAddItem, onAbort } = props;
   const [id] = useState(uuidv4());
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
@@ -26,9 +26,7 @@ export function Form(props: FormProps) {
       <div className="w-full flex">
         <div className="w-full flex flex-col gap-[8px]">
           <div className="flex flex-col gap-1">
-            <label htmlFor="label" className="text-sm text-text-secondary-700">
-              Nazwa
-            </label>
+            <label htmlFor="label" className="text-sm text-text-secondary-700">Nazwa</label>
             <input
               type="text"
               name="label"
@@ -80,7 +78,10 @@ export function Form(props: FormProps) {
           Anuluj
         </button>
 
-        <button className="bg-white h-[40px] text-button-secondary-color-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-color-border hover:bg-violet-50">
+        <button
+          type="submit"
+          className="bg-white h-[40px] text-button-secondary-color-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-color-border hover:bg-violet-50"
+        >
           Dodaj
         </button>
       </div>

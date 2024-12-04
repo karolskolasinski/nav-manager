@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
 import { Item } from "@/app/contracts";
@@ -7,13 +7,26 @@ import { Item } from "@/app/contracts";
 type Props = {
   onAddItem: (navItem: Item) => void;
   onAbort: () => void;
+  item?: Item;
 };
 
 export function Form(props: Props) {
-  const { onAddItem, onAbort } = props;
-  const [id] = useState(uuidv4());
+  const { onAddItem, onAbort, item } = props;
+  const [id, setId] = useState(uuidv4());
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
+
+  useEffect(() => {
+    if (item) {
+      setId(item.id);
+      setLabel(item.label);
+      setUrl(item.url);
+    } else {
+      setId(uuidv4());
+      setLabel("");
+      setUrl("");
+    }
+  }, [item]);
 
   return (
     <form
@@ -23,6 +36,8 @@ export function Form(props: Props) {
       }}
       className="w-full rounded-md max-w-[73rem] py-spacing-2xl px-spacing-3xl bg-white flex flex-col gap-spacing-2xl items-center border border-solid border-border-primary"
     >
+      <input type="hidden" name="id" value={id} />
+
       <div className="w-full flex">
         <div className="w-full flex flex-col gap-[8px]">
           <div className="flex flex-col gap-1">
@@ -30,7 +45,7 @@ export function Form(props: Props) {
             <input
               type="text"
               name="label"
-              defaultValue={label}
+              value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="np. Promocje"
               className="text-text-primary-900 px-4 py-2 border border-solid  border-border-primary rounded-md"
@@ -43,7 +58,7 @@ export function Form(props: Props) {
               <input
                 type="url"
                 name="url"
-                defaultValue={url}
+                value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="Wklej lub wyszukaj"
                 className="w-full text-text-primary-900 pl-10 pr-4 py-2 border border-solid  border-border-primary rounded-md"
@@ -82,7 +97,7 @@ export function Form(props: Props) {
           type="submit"
           className="bg-white h-[40px] text-button-secondary-color-fg text-sm py-1 px-6 rounded-md flex gap-2 items-center font-semibold border border-solid border-button-secondary-color-border hover:bg-violet-50"
         >
-          Dodaj
+          {label !== "" ? "Zapisz" : "Dodaj"}
         </button>
       </div>
     </form>

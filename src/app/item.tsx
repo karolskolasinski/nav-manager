@@ -16,11 +16,22 @@ export function NavItem(props: Props) {
   const [visibleForms, setVisibleForms] = useState<string[]>([]);
   const [itemList, setItemList] = useState([item] as Item[]);
   const [lastRemovedItemId, setLastRemovedItemId] = useState<string | null>(null);
+  const [toEdit, setToEdit] = useState<number | null>(null);
 
   function addItem(item: Item) {
     const parsed = Item.safeParse(item);
     if (!parsed.success) {
       alert("Formularz zawiera błędy, popraw błędy i spróbuj jeszcze raz.");
+      return;
+    }
+
+    // if found id than override
+    const index = itemList.findIndex((i) => i.id === item.id);
+    if (index !== -1) {
+      itemList[index] = item;
+      setItemList((prev) => [...prev]);
+      setIsFormVisible(false);
+      setToEdit(null);
       return;
     }
 
@@ -41,6 +52,7 @@ export function NavItem(props: Props) {
 
   function showForm(itemId: string) {
     setVisibleForms((prev) => [...prev, itemId]);
+    setIsFormVisible(false);
   }
 
   function hideForm(itemId: string) {
@@ -81,14 +93,22 @@ export function NavItem(props: Props) {
     });
   }
 
-  const indentation = isChild ? "pl-[64px]" : "";
+  function edit(index: number) {
+    setToEdit(index);
+    setIsFormVisible(true);
+    setVisibleForms([]);
+  }
+
   const buttonClass =
     "bg-white h-[40px] text-button-secondary-fg text-sm py-1 px-6 flex gap-2 items-center font-semibold border border-solid border-button-secondary-border";
 
   return (
     <div className="w-full max-w-[73rem]">
       {itemList.map((item, index) => (
-        <div key={item.id} className={indentation}>
+        <div
+          key={item.id}
+          {...(isChild && { className: "pl-[64px]" })}
+        >
           <div className="py-spacing-2xl px-spacing-3xl flex flex-col md:flex-row ms:items-center gap-spacing-xs bg-white">
             <div className="flex gap-spacing-xs md:flex-1">
               <div className="w-[40px] h-[40px] flex justify-center">
@@ -110,7 +130,7 @@ export function NavItem(props: Props) {
               </button>
 
               <button
-                onClick={() => alert("TODO: edit item")}
+                onClick={() => edit(index)}
                 className={`${buttonClass} border-x-0 hover:bg-gray-100`}
               >
                 Edytuj
@@ -125,7 +145,7 @@ export function NavItem(props: Props) {
             </div>
           </div>
 
-          {/* for adding sub items */}
+          {/* for adding and editing sub items */}
           {visibleForms.includes(item.id) && (
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <Form
@@ -144,12 +164,13 @@ export function NavItem(props: Props) {
             />
           ))}
 
-          {/* for adding items */}
+          {/* for adding and editing main items */}
           {isFormVisible && index === itemList.length - 1 && (
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <Form
                 onAddItem={(data) => addItem(data)}
                 onAbort={() => setIsFormVisible(false)}
+                item={toEdit !== null ? itemList[toEdit] : undefined}
               />
             </div>
           )}

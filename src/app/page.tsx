@@ -19,6 +19,10 @@ export default function Home() {
     setIsFormVisible(false);
   }
 
+  function removeMenu(id: string) {
+    setMenuList((prev) => prev.filter((item) => item.id !== id));
+  }
+
   return (
     <main className="p-8 flex flex-col gap-8 items-center">
       <div className="w-full max-w-[73rem] rounded-md bg-bg-secondary flex flex-col p-4 gap-spacing-3xl items-center border border-solid border-border-secondary">
@@ -42,7 +46,7 @@ export default function Home() {
         {isFormVisible && <Form onAddItem={addMenu} onAbort={() => setIsFormVisible(false)} />}
       </div>
 
-      {menuList.map((item) => <NavItem key={item.id} item={item} />).reverse()}
+      {menuList.map((item) => <NavItem key={item.id} item={item} onRemove={removeMenu} />).reverse()}
     </main>
   );
 }

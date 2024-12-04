@@ -1,19 +1,21 @@
 "use client";
 import { Item } from "@/app/contracts";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "@/app/form";
 
 type Props = {
   item: Item;
   isChild?: boolean;
+  onRemove: (id: string) => void;
 };
 
 export function NavItem(props: Props) {
-  const { item, isChild } = props;
+  const { item, isChild, onRemove } = props;
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [visibleForms, setVisibleForms] = useState<string[]>([]);
   const [itemList, setItemList] = useState([item] as Item[]);
+  const [lastRemovedItemId, setLastRemovedItemId] = useState<string | null>(null);
 
   function addItem(item: Item) {
     const parsed = Item.safeParse(item);
@@ -28,7 +30,14 @@ export function NavItem(props: Props) {
 
   function removeItem(itemId: string) {
     setItemList((prev) => prev.filter((item) => item.id !== itemId));
+    setLastRemovedItemId(itemId);
   }
+
+  useEffect(() => {
+    if (itemList.length === 0 && lastRemovedItemId) {
+      onRemove(lastRemovedItemId);
+    }
+  }, [itemList, lastRemovedItemId]);
 
   function showForm(itemId: string) {
     setVisibleForms((prev) => [...prev, itemId]);
@@ -54,6 +63,22 @@ export function NavItem(props: Props) {
     });
 
     hideForm(itemList[index].id);
+  }
+
+  function removeSubItem(itemId: string, subItemId: string) {
+    const item = itemList.find((item) => item.id === itemId);
+    if (!item) {
+      return;
+    }
+
+    item.subItems = item.subItems.filter((subItem) => subItem.id !== subItemId);
+
+    setItemList((prev) => {
+      const newItems = [...prev];
+      const index = newItems.findIndex((item) => item.id === itemId);
+      newItems[index] = item;
+      return newItems;
+    });
   }
 
   const indentation = isChild ? "pl-[64px]" : "";
@@ -110,6 +135,7 @@ export function NavItem(props: Props) {
               key={subItem.id}
               item={subItem}
               isChild={true}
+              onRemove={(subItemId) => removeSubItem(item.id, subItemId)}
             />
           ))}
 

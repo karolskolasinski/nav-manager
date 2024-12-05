@@ -49,7 +49,7 @@ export function NavItem(props: Props) {
     }
   }, [itemList, lastRemovedItemId]);
 
-  function addSubItem(data: Item, index: number) {
+  function addChild(data: Item, index: number) {
     const parsed = Item.safeParse(data);
     if (!parsed.success) {
       alert("Formularz zawiera błędy, popraw błędy i spróbuj jeszcze raz.");
@@ -57,7 +57,7 @@ export function NavItem(props: Props) {
     }
 
     const item = itemList[index];
-    item.subItems.push(data);
+    item.children.push(data);
     setItemList((prev) => {
       const newItems = [...prev];
       newItems[index] = item;
@@ -67,13 +67,13 @@ export function NavItem(props: Props) {
     setItemForm(null);
   }
 
-  function removeSubItem(itemId: string, subItemId: string) {
+  function removeChild(itemId: string, childId: string) {
     const item = itemList.find((item) => item.id === itemId);
     if (!item) {
       return;
     }
 
-    item.subItems = item.subItems.filter((subItem) => subItem.id !== subItemId);
+    item.children = item.children.filter((child) => child.id !== childId);
 
     setItemList((prev) => {
       const newItems = [...prev];
@@ -103,8 +103,8 @@ export function NavItem(props: Props) {
           key={item.id}
           {...(isChild && { className: "pl-[64px]" })}
         >
-          <div className="py-spacing-2xl px-spacing-3xl flex flex-col md:flex-row ms:items-center gap-spacing-xs bg-white">
-            <div className="flex gap-spacing-xs md:flex-1">
+          <div className="py-spacing-2xl px-spacing-3xl flex flex-col md:flex-row ms:items-center gap-spacing-xs bg-white items-center">
+            <div className="flex gap-spacing-xs md:flex-1 items-center">
               <div className="w-[40px] h-[40px] flex justify-center">
                 <Image src="/move.svg" alt="icon" width={25} height={25} />
               </div>
@@ -139,22 +139,22 @@ export function NavItem(props: Props) {
             </div>
           </div>
 
-          {/* for adding and editing sub items */}
+          {/* for adding and editing children */}
           {itemForm === item.id && (
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <Form
-                onAddItem={(data) => addSubItem(data, index)}
+                onAddItem={(data) => addChild(data, index)}
                 onAbort={() => setItemForm(null)}
               />
             </div>
           )}
 
-          {item.subItems.map((subItem) => (
+          {item.children.map((child) => (
             <NavItem
-              key={subItem.id}
-              item={subItem}
+              key={child.id}
+              item={child}
               isChild={true}
-              onRemove={(subItemId) => removeSubItem(item.id, subItemId)}
+              onRemove={(childId) => removeChild(item.id, childId)}
             />
           ))}
 

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Item } from "@/app/contracts";
 
 type Props = {
-  onAddItem: (navItem: Item) => void;
+  onAddItem: (item: Item) => void;
   onAbort: () => void;
   item?: Item;
 };
@@ -32,7 +32,7 @@ export function Form(props: Props) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onAddItem({ id, label, url, subItems: [] });
+        onAddItem({ id, label, url, children: [] });
       }}
       className="w-full rounded-md max-w-[73rem] py-spacing-2xl px-spacing-3xl bg-white flex flex-col gap-spacing-2xl items-center border border-solid border-border-primary"
     >
@@ -74,7 +74,13 @@ export function Form(props: Props) {
           </div>
         </div>
 
-        <div className="cursor-pointer w-[40px] h-[40px] flex justify-center ml-spacing-2xl">
+        <div
+          onClick={() => {
+            setLabel("");
+            setUrl("");
+          }}
+          className="cursor-pointer w-[40px] h-[40px] flex justify-center ml-spacing-2xl"
+        >
           <Image
             src="/trash.svg"
             alt="icon"

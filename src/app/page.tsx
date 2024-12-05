@@ -7,7 +7,7 @@ import { NavItem } from "@/app/item";
 
 export default function Home() {
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [menuList, setMenuList] = useState([] as Item[]);
+  const [item, setMenuList] = useState<Item | null>(null);
 
   function addMenu(item: Item) {
     const parsed = Item.safeParse(item);
@@ -15,12 +15,12 @@ export default function Home() {
       alert("Formularz zawiera błędy, popraw błędy i spróbuj jeszcze raz.");
       return;
     }
-    setMenuList((prev) => [...prev, item]);
+    setMenuList(item);
     setIsFormVisible(false);
   }
 
-  function removeMenu(id: string) {
-    setMenuList((prev) => prev.filter((item) => item.id !== id));
+  function removeMenu() {
+    setMenuList(null);
   }
 
   return (
@@ -46,7 +46,7 @@ export default function Home() {
         {isFormVisible && <Form onAddItem={addMenu} onAbort={() => setIsFormVisible(false)} />}
       </div>
 
-      {menuList.map((item) => <NavItem key={item.id} item={item} onRemove={removeMenu} />).reverse()}
+      {item !== null && <NavItem item={item} onRemove={removeMenu} />}
     </main>
   );
 }

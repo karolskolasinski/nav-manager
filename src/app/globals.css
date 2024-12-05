@@ -5,3 +5,11 @@
 body {
     font-family: Inter, sans-serif;
 }
+
+[data-item]:last-of-type > div > [data-key] {
+    border-bottom: none;
+}
+
+[data-item]:not(:last-of-type) > div > [data-key] {
+    border-radius: 0;
+}

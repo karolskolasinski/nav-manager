@@ -79,7 +79,7 @@ export function Form(props: Props) {
             setLabel("");
             setUrl("");
           }}
-          className="cursor-pointer w-[40px] h-[40px] flex justify-center ml-spacing-2xl"
+          className="cursor-pointer w-[40px] h-[40px] flex justify-center ml-spacing-2xl invisible sm:visible"
         >
           <Image
             src="/trash.svg"

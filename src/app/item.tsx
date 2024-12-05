@@ -3,6 +3,20 @@ import { Item } from "@/app/contracts";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Form } from "@/app/form";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 type Props = {
   item: Item;
@@ -100,102 +114,137 @@ export function NavItem(props: Props) {
     ? "border-b border-l border-solid border-border-secondary rounded-bl-md"
     : "border-b border-solid border-border-secondary rounded-t-md";
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  function handleDragEnd(event: any) {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setItemList((items) => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }
+
   return (
-    <div
-      {...(isChild && { "data-item": item.id })}
-      className={`w-full max-w-[73rem] ${itemWrapperClass}`}>
-      {itemList.map((item, index) => {
-        const notFirstClass = index > 0
-          ? "!rounded-none border-t border-solid border-border-secondary"
-          : "";
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <div
+        {...(isChild && { "data-item": item.id })}
+        className={`w-full max-w-[73rem] ${itemWrapperClass}`}
+      >
+        <SortableContext
+          items={itemList.map((item) => item.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {itemList.map((item, index) => {
+            const notFirstClass = index > 0
+              ? "!rounded-none border-t border-solid border-border-secondary"
+              : "";
 
-        return (
-          <div
-            key={item.id}
-            {...(isChild && { className: "pl-[64px]" })}
-          >
-            <div
-              data-key={item.id}
-              className={`py-spacing-2xl px-spacing-3xl flex flex-col md:flex-row ms:items-center gap-spacing-xs bg-white items-center ${itemClass} ${notFirstClass}`}
-            >
-              <div className="flex gap-spacing-xs md:flex-1 items-center">
-                <div className="w-[40px] h-[40px] flex justify-center">
-                  <Image src="/move.svg" alt="icon" width={25} height={25} />
+            return (
+              <div key={item.id} id={item.id}>
+                <div {...(isChild && { className: "pl-[64px]" })}>
+                  <div
+                    data-key={item.id}
+                    className={`py-spacing-2xl px-spacing-3xl flex flex-col md:flex-row ms:items-center gap-spacing-xs bg-white items-center ${itemClass} ${notFirstClass}`}
+                  >
+                    <div className="flex gap-spacing-xs md:flex-1 items-center">
+                      <div className="w-[40px] h-[40px] flex justify-center">
+                        <Image src="/move.svg" alt="icon" width={25} height={25} />
+                      </div>
+
+                      <div className="flex flex-col flex-1 gap-spacing-sm">
+                        <div className="font-semibold text-sm">{item.label}</div>
+                        <div className="text-sm text-text-tertiary-600">{item.url}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className={`${buttonClass} rounded-l-md hover:bg-gray-100`}
+                      >
+                        Usuń
+                      </button>
+
+                      <button
+                        onClick={() => edit(index)}
+                        className={`${buttonClass} border-x-0 hover:bg-gray-100`}
+                      >
+                        Edytuj
+                      </button>
+
+                      <button
+                        onClick={() => setItemForm(item.id)}
+                        className={`${buttonClass} rounded-r-md hover:bg-gray-100`}
+                      >
+                        Dodaj <span className="hidden md:block">pozycję menu</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* for adding and editing children */}
+                  {itemForm === item.id && (
+                    <div
+                      className={`px-spacing-3xl py-spacing-xl w-full bg-bg-secondary border-y border-solid border-border-secondary ${
+                        isChild ? "border-l border-b-0" : ""
+                      }`}
+                    >
+                      <Form
+                        onAddItem={(data) => addChild(data, index)}
+                        onAbort={() => setItemForm(null)}
+                      />
+                    </div>
+                  )}
+
+                  {item.children.map((child) => (
+                    <NavItem
+                      key={child.id}
+                      item={child}
+                      isChild={true}
+                      onRemove={(childId) => removeChild(item.id, childId)}
+                    />
+                  ))}
+
+                  {/* for adding and editing main items */}
+                  {itemForm === "main" && index === itemList.length - 1 && (
+                    <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
+                      <Form
+                        onAddItem={(data) => addItem(data)}
+                        onAbort={() => setItemForm(null)}
+                        item={toEdit !== null ? itemList[toEdit] : undefined}
+                      />
+                    </div>
+                  )}
+
+                  {index === itemList.length - 1 && !isChild && (
+                    <div className="px-spacing-3xl py-spacing-xl w-full border-t border-solid border-border-secondary">
+                      <button
+                        onClick={() => showNewItemForm()}
+                        className={`${buttonClass} rounded-md hover:bg-gray-100`}
+                      >
+                        Dodaj pozycję menu
+                      </button>
+                    </div>
+                  )}
                 </div>
-
-                <div className="flex flex-col flex-1 gap-spacing-sm">
-                  <div className="font-semibold text-sm">{item.label}</div>
-                  <div className="text-sm text-text-tertiary-600">{item.url}</div>
-                </div>
               </div>
-
-              <div className="flex justify-center">
-                <button
-                  onClick={() => removeItem(item.id)}
-                  className={`${buttonClass} rounded-l-md hover:bg-gray-100`}
-                >
-                  Usuń
-                </button>
-
-                <button
-                  onClick={() => edit(index)}
-                  className={`${buttonClass} border-x-0 hover:bg-gray-100`}
-                >
-                  Edytuj
-                </button>
-
-                <button
-                  onClick={() => setItemForm(item.id)}
-                  className={`${buttonClass} rounded-r-md hover:bg-gray-100`}
-                >
-                  Dodaj <span className="hidden md:block">pozycję menu</span>
-                </button>
-              </div>
-            </div>
-
-            {/* for adding and editing children */}
-            {itemForm === item.id && (
-              <div className={`px-spacing-3xl py-spacing-xl w-full bg-bg-secondary border-y border-solid border-border-secondary ${isChild ? "border-l border-b-0" : ""}`}>
-                <Form
-                  onAddItem={(data) => addChild(data, index)}
-                  onAbort={() => setItemForm(null)}
-                />
-              </div>
-            )}
-
-            {item.children.map((child) => (
-              <NavItem
-                key={child.id}
-                item={child}
-                isChild={true}
-                onRemove={(childId) => removeChild(item.id, childId)}
-              />
-            ))}
-
-            {/* for adding and editing main items */}
-            {itemForm === "main" && index === itemList.length - 1 && (
-              <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
-                <Form
-                  onAddItem={(data) => addItem(data)}
-                  onAbort={() => setItemForm(null)}
-                  item={toEdit !== null ? itemList[toEdit] : undefined}
-                />
-              </div>
-            )}
-
-            {index === itemList.length - 1 && !isChild && (
-              <div className="px-spacing-3xl py-spacing-xl w-full border-t border-solid border-border-secondary">
-                <button
-                  onClick={() => showNewItemForm()}
-                  className={`${buttonClass} rounded-md hover:bg-gray-100`}
-                >
-                  Dodaj pozycję menu
-                </button>
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
+            );
+          })}
+        </SortableContext>
+      </div>
+    </DndContext>
   );
 }

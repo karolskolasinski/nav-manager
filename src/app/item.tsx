@@ -12,17 +12,20 @@ type Props = {
 
 export function NavItem(props: Props) {
   const { item, isChild, onRemove } = props;
-  const [isFormVisible, setIsFormVisible] = useState(false);
   const [visibleForms, setVisibleForms] = useState<string[]>([]);
   const [itemList, setItemList] = useState([item] as Item[]);
   const [lastRemovedItemId, setLastRemovedItemId] = useState<string | null>(null);
   const [toEdit, setToEdit] = useState<number | null>(null);
 
-  function addItem(item: Item) {
+  function addItem(item: Item, itemIdToHide?: string) {
     const parsed = Item.safeParse(item);
     if (!parsed.success) {
       alert("Formularz zawiera błędy, popraw błędy i spróbuj jeszcze raz.");
       return;
+    }
+
+    if (itemIdToHide) {
+      setVisibleForms((prev) => prev.filter((itemId) => itemId !== itemIdToHide));
     }
 
     // if found id than override
@@ -30,13 +33,11 @@ export function NavItem(props: Props) {
     if (index !== -1) {
       itemList[index] = item;
       setItemList((prev) => [...prev]);
-      setIsFormVisible(false);
       setToEdit(null);
       return;
     }
 
     setItemList((prev) => [...prev, item]);
-    setIsFormVisible(false);
   }
 
   function removeItem(itemId: string) {
@@ -49,15 +50,6 @@ export function NavItem(props: Props) {
       onRemove(lastRemovedItemId);
     }
   }, [itemList, lastRemovedItemId]);
-
-  function showForm(itemId: string) {
-    setVisibleForms((prev) => [...prev, itemId]);
-    setIsFormVisible(false);
-  }
-
-  function hideForm(itemId: string) {
-    setVisibleForms((prev) => prev.filter((formId) => formId !== itemId));
-  }
 
   function addSubItem(data: Item, index: number) {
     const parsed = Item.safeParse(data);
@@ -74,7 +66,7 @@ export function NavItem(props: Props) {
       return newItems;
     });
 
-    hideForm(itemList[index].id);
+    setVisibleForms((prev) => prev.filter((formId) => formId !== itemList[index].id));
   }
 
   function removeSubItem(itemId: string, subItemId: string) {
@@ -95,14 +87,12 @@ export function NavItem(props: Props) {
 
   function edit(index: number) {
     setToEdit(index);
-    setIsFormVisible(true);
-    setVisibleForms([]);
+    setVisibleForms((prev) => [...prev, "main"]);
   }
 
   function showNewItemForm() {
     setToEdit(null);
-    setIsFormVisible(true);
-    setVisibleForms([]);
+    setVisibleForms((prev) => [...prev, "main"]);
   }
 
   const buttonClass =
@@ -143,7 +133,7 @@ export function NavItem(props: Props) {
               </button>
 
               <button
-                onClick={() => showForm(item.id)}
+                onClick={() => setVisibleForms((prev) => [...prev, item.id])}
                 className={`${buttonClass} rounded-r-md hover:bg-gray-100`}
               >
                 Dodaj <span className="hidden md:block">pozycję menu</span>
@@ -156,7 +146,8 @@ export function NavItem(props: Props) {
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <Form
                 onAddItem={(data) => addSubItem(data, index)}
-                onAbort={() => hideForm(item.id)}
+                onAbort={() =>
+                  setVisibleForms((prev) => prev.filter((itemId) => itemId !== item.id))}
               />
             </div>
           )}
@@ -171,11 +162,12 @@ export function NavItem(props: Props) {
           ))}
 
           {/* for adding and editing main items */}
-          {isFormVisible && index === itemList.length - 1 && (
+          {visibleForms.includes("main") && index === itemList.length - 1 && (
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <Form
-                onAddItem={(data) => addItem(data)}
-                onAbort={() => setIsFormVisible(false)}
+                onAddItem={(data) => addItem(data, "main")}
+                onAbort={() =>
+                  setVisibleForms((prev) => prev.filter((itemId) => itemId !== "main"))}
                 item={toEdit !== null ? itemList[toEdit] : undefined}
               />
             </div>

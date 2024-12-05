@@ -12,21 +12,19 @@ type Props = {
 
 export function NavItem(props: Props) {
   const { item, isChild, onRemove } = props;
-  const [visibleForms, setVisibleForms] = useState<string[]>([]);
+  const [itemForm, setItemForm] = useState<string | null>(null);
   const [itemList, setItemList] = useState([item] as Item[]);
   const [lastRemovedItemId, setLastRemovedItemId] = useState<string | null>(null);
   const [toEdit, setToEdit] = useState<number | null>(null);
 
-  function addItem(item: Item, itemIdToHide?: string) {
+  function addItem(item: Item) {
     const parsed = Item.safeParse(item);
     if (!parsed.success) {
       alert("Formularz zawiera błędy, popraw błędy i spróbuj jeszcze raz.");
       return;
     }
 
-    if (itemIdToHide) {
-      setVisibleForms((prev) => prev.filter((itemId) => itemId !== itemIdToHide));
-    }
+    setItemForm(null);
 
     // if found id than override
     const index = itemList.findIndex((i) => i.id === item.id);
@@ -66,7 +64,7 @@ export function NavItem(props: Props) {
       return newItems;
     });
 
-    setVisibleForms((prev) => prev.filter((formId) => formId !== itemList[index].id));
+    setItemForm(null);
   }
 
   function removeSubItem(itemId: string, subItemId: string) {
@@ -87,12 +85,12 @@ export function NavItem(props: Props) {
 
   function edit(index: number) {
     setToEdit(index);
-    setVisibleForms((prev) => [...prev, "main"]);
+    setItemForm("main");
   }
 
   function showNewItemForm() {
     setToEdit(null);
-    setVisibleForms((prev) => [...prev, "main"]);
+    setItemForm("main");
   }
 
   const buttonClass =
@@ -133,7 +131,7 @@ export function NavItem(props: Props) {
               </button>
 
               <button
-                onClick={() => setVisibleForms((prev) => [...prev, item.id])}
+                onClick={() => setItemForm(item.id)}
                 className={`${buttonClass} rounded-r-md hover:bg-gray-100`}
               >
                 Dodaj <span className="hidden md:block">pozycję menu</span>
@@ -142,12 +140,11 @@ export function NavItem(props: Props) {
           </div>
 
           {/* for adding and editing sub items */}
-          {visibleForms.includes(item.id) && (
+          {itemForm === item.id && (
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <Form
                 onAddItem={(data) => addSubItem(data, index)}
-                onAbort={() =>
-                  setVisibleForms((prev) => prev.filter((itemId) => itemId !== item.id))}
+                onAbort={() => setItemForm(null)}
               />
             </div>
           )}
@@ -162,12 +159,11 @@ export function NavItem(props: Props) {
           ))}
 
           {/* for adding and editing main items */}
-          {visibleForms.includes("main") && index === itemList.length - 1 && (
+          {itemForm === "main" && index === itemList.length - 1 && (
             <div className="px-spacing-3xl py-spacing-xl w-full bg-bg-secondary">
               <Form
-                onAddItem={(data) => addItem(data, "main")}
-                onAbort={() =>
-                  setVisibleForms((prev) => prev.filter((itemId) => itemId !== "main"))}
+                onAddItem={(data) => addItem(data)}
+                onAbort={() => setItemForm(null)}
                 item={toEdit !== null ? itemList[toEdit] : undefined}
               />
             </div>

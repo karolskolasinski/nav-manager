@@ -13,3 +13,12 @@ body {
 [data-item]:not(:last-of-type) > div > [data-key] {
     border-radius: 0;
 }
+
+
+.dnd-sortable-tree_simple_tree-item {
+    padding: 0 !important;
+}
+
+.dnd-sortable-tree_simple_tree-item-collapse_button {
+    display: none !important;
+}

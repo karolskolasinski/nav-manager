@@ -11,6 +11,7 @@ export default function Home() {
 
   function addMenu(item: Item) {
     const parsed = Item.safeParse(item);
+    console.log(parsed);
     if (!parsed.success) {
       alert("Formularz zawiera błędy, popraw błędy i spróbuj jeszcze raz.");
       return;

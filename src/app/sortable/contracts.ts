@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 const BaseItem = z.object({
-  id: z.string().uuid(),
+  id: z.number(),
   label: z.string().min(1),
-  url: z.string().url().optional().or(z.literal("")),
+  url: z.string().url(),
 });
 
 type Children = z.infer<typeof BaseItem> & {

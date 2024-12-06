@@ -20,7 +20,7 @@ export function Form(props: Props) {
     if (item) {
       setId(item.id);
       setLabel(item.label);
-      setUrl(item.url);
+      setUrl(item.url ?? "");
     } else {
       setId(uuidv4());
       setLabel("");
